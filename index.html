@@ -1,0 +1,1067 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NEXUS AI — Enterprise SaaS & Analytics Platform</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            brand: {
+              cyan: '#06b6d4',
+              violet: '#8b5cf6',
+              blue: '#3b82f6',
+              dark: '#07090E',
+              card: '#111827',
+              border: 'rgba(255, 255, 255, 0.08)'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #07090E;
+      color: #E2E8F0;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    .glass-card {
+      background: rgba(17, 24, 39, 0.7);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+    }
+    .gradient-border {
+      position: relative;
+    }
+    .gradient-border::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      padding: 1px;
+      background: linear-gradient(135deg, rgba(6, 182, 212, 0.5), rgba(139, 92, 246, 0.5), transparent 70%);
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      pointer-events: none;
+    }
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0B0F19;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #1F2937;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #374151;
+    }
+    .nav-btn.active {
+      background: linear-gradient(to right, rgba(6, 182, 212, 0.12), rgba(139, 92, 246, 0.12));
+      color: #67e8f9;
+      border-color: rgba(6, 182, 212, 0.3);
+    }
+    .nav-btn.active i {
+      color: #22d3ee;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex antialiased selection:bg-cyan-500 selection:text-white">
+
+  <!-- SIDEBAR -->
+  <aside class="w-64 border-r border-white/5 bg-[#0A0D14]/90 backdrop-blur-xl flex flex-col justify-between hidden md:flex shrink-0 h-screen sticky top-0">
+    <div>
+      <!-- Logo -->
+      <div class="h-20 flex items-center px-6 gap-3 border-b border-white/5">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 via-indigo-500 to-violet-500 flex items-center justify-center shadow-lg shadow-cyan-500/20">
+          <i data-lucide="cpu" class="w-5 h-5 text-white"></i>
+        </div>
+        <div>
+          <span class="text-lg font-bold tracking-tight text-white flex items-center gap-1.5">
+            NEXUS <span class="text-xs px-1.5 py-0.5 rounded bg-cyan-500/10 text-cyan-400 font-mono font-medium border border-cyan-500/20">AI</span>
+          </span>
+          <p class="text-[11px] text-gray-500 font-medium">Enterprise Cloud v2.4</p>
+        </div>
+      </div>
+
+      <!-- Navigation Links -->
+      <nav class="px-4 py-6 space-y-1" id="sidebar-nav">
+        <div class="text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-3 mb-2 font-mono">Platform</div>
+        
+        <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-btn active w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-gray-400 hover:text-white hover:bg-white/[0.04] transition font-medium border border-transparent text-left">
+          <i data-lucide="layout-grid" class="w-4 h-4"></i>
+          <span>Dashboard</span>
+          <span class="ml-auto text-[10px] px-1.5 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 font-mono">Live</span>
+        </button>
+
+        <button onclick="switchTab('analytics')" id="nav-analytics" class="nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-gray-400 hover:text-white hover:bg-white/[0.04] transition font-medium border border-transparent text-left">
+          <i data-lucide="bar-chart-3" class="w-4 h-4"></i>
+          <span>Analytics</span>
+        </button>
+
+        <button onclick="switchTab('agents')" id="nav-agents" class="nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-gray-400 hover:text-white hover:bg-white/[0.04] transition font-medium border border-transparent text-left">
+          <i data-lucide="bot" class="w-4 h-4"></i>
+          <span>AI Agents</span>
+          <span class="ml-auto text-[10px] px-1.5 py-0.5 rounded-full bg-violet-500/20 text-violet-300 font-mono">14 Active</span>
+        </button>
+
+        <button onclick="switchTab('pipelines')" id="nav-pipelines" class="nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-gray-400 hover:text-white hover:bg-white/[0.04] transition font-medium border border-transparent text-left">
+          <i data-lucide="layers" class="w-4 h-4"></i>
+          <span>Pipelines & Models</span>
+        </button>
+
+        <button onclick="switchTab('datastores')" id="nav-datastores" class="nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-gray-400 hover:text-white hover:bg-white/[0.04] transition font-medium border border-transparent text-left">
+          <i data-lucide="database" class="w-4 h-4"></i>
+          <span>Datastores</span>
+        </button>
+
+        <div class="text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-3 pt-6 mb-2 font-mono">Management</div>
+
+        <button onclick="switchTab('apikeys')" id="nav-apikeys" class="nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-gray-400 hover:text-white hover:bg-white/[0.04] transition font-medium border border-transparent text-left">
+          <i data-lucide="shield-check" class="w-4 h-4"></i>
+          <span>API Keys & Security</span>
+        </button>
+
+        <button onclick="switchTab('settings')" id="nav-settings" class="nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-gray-400 hover:text-white hover:bg-white/[0.04] transition font-medium border border-transparent text-left">
+          <i data-lucide="settings" class="w-4 h-4"></i>
+          <span>Settings</span>
+        </button>
+      </nav>
+    </div>
+
+    <!-- User & Server Status -->
+    <div class="p-4 border-t border-white/5 space-y-3">
+      <!-- Cluster Status -->
+      <div class="p-3 rounded-xl bg-white/[0.02] border border-white/5">
+        <div class="flex items-center justify-between text-xs mb-1.5">
+          <span class="text-gray-400 flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            US-East Cluster
+          </span>
+          <span class="text-emerald-400 font-mono text-[11px]">99.98%</span>
+        </div>
+        <div class="w-full bg-white/5 h-1.5 rounded-full overflow-hidden">
+          <div class="bg-gradient-to-r from-cyan-400 to-emerald-400 h-full w-[82%] rounded-full"></div>
+        </div>
+        <div class="flex justify-between text-[10px] text-gray-500 mt-1 font-mono">
+          <span>82% Capacity</span>
+          <span>4.2M req/h</span>
+        </div>
+      </div>
+
+      <!-- User Profile -->
+      <div class="flex items-center gap-3 p-2 rounded-xl hover:bg-white/[0.03] transition cursor-pointer" onclick="switchTab('settings')">
+        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop&crop=faces" alt="Avatar" class="w-9 h-9 rounded-full ring-2 ring-cyan-500/30 object-cover">
+        <div class="flex-1 min-w-0">
+          <div class="text-sm font-semibold text-white truncate">Olivier Tech</div>
+          <div class="text-xs text-gray-400 truncate">Lead Developer</div>
+        </div>
+        <i data-lucide="more-vertical" class="w-4 h-4 text-gray-500"></i>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT AREA -->
+  <main class="flex-1 flex flex-col min-w-0 min-h-screen">
+    <!-- Topbar -->
+    <header class="h-20 border-b border-white/5 px-8 flex items-center justify-between sticky top-0 bg-[#07090E]/80 backdrop-blur-xl z-20">
+      <div class="flex items-center gap-4 flex-1 max-w-xl">
+        <!-- Search bar -->
+        <div class="relative w-full">
+          <i data-lucide="search" class="w-4 h-4 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+          <input type="text" id="global-search" oninput="handleSearch(this.value)" placeholder="Search metrics, models, API endpoints... (Press '/' to search)" 
+                 class="w-full bg-white/[0.03] border border-white/10 rounded-xl pl-10 pr-12 py-2 text-sm text-gray-200 placeholder-gray-500 focus:outline-none focus:border-cyan-500/60 focus:ring-2 focus:ring-cyan-500/20 transition">
+          <kbd class="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-mono px-1.5 py-0.5 rounded bg-white/10 text-gray-400">⌘K</kbd>
+        </div>
+      </div>
+
+      <!-- Right Header Actions -->
+      <div class="flex items-center gap-3">
+        <button onclick="toggleNotification()" class="relative p-2.5 rounded-xl border border-white/10 bg-white/[0.02] hover:bg-white/[0.05] text-gray-400 hover:text-white transition">
+          <i data-lucide="bell" class="w-4 h-4"></i>
+          <span class="absolute top-2 right-2 w-2 h-2 rounded-full bg-cyan-400 ring-2 ring-[#07090E]"></span>
+        </button>
+
+        <button onclick="openDeployModal()" class="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-violet-600 hover:from-cyan-400 hover:to-violet-500 text-white font-medium text-sm shadow-lg shadow-cyan-500/20 hover:shadow-cyan-500/30 transition transform active:scale-95">
+          <i data-lucide="plus-circle" class="w-4 h-4"></i>
+          <span>Deploy Model</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- CONTENT SECTIONS (DYNAMIC TABS) -->
+
+    <!-- ==================== 1. DASHBOARD TAB ==================== -->
+    <div id="tab-dashboard" class="tab-content p-8 space-y-8 max-w-7xl mx-auto w-full">
+      <!-- Hero Welcome Banner -->
+      <div class="glass-card gradient-border rounded-2xl p-6 sm:p-8 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 relative overflow-hidden">
+        <div class="absolute -right-16 -top-16 w-80 h-80 bg-gradient-to-br from-cyan-500/20 via-violet-500/10 to-transparent rounded-full blur-3xl pointer-events-none"></div>
+        <div class="relative z-10 space-y-2">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-mono font-medium">
+            <span class="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping"></span>
+            Real-time Telemetry Enabled
+          </div>
+          <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+            System Operations & Revenue Overview
+          </h1>
+          <p class="text-gray-400 text-sm max-w-2xl leading-relaxed">
+            All AI clusters and inference pipelines are performing optimally. Global throughput increased by 28.4% over the last 24 hours.
+          </p>
+        </div>
+        <div class="flex items-center gap-3 relative z-10">
+          <button onclick="alert('Exporting metrics report to PDF...')" class="px-4 py-2 rounded-xl bg-white/[0.04] border border-white/10 hover:bg-white/[0.08] text-white text-xs font-semibold tracking-wide transition flex items-center gap-2">
+            <i data-lucide="download" class="w-3.5 h-3.5 text-gray-400"></i>
+            Export PDF
+          </button>
+          <button onclick="switchTab('analytics')" class="px-4 py-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 text-xs font-bold tracking-wide transition shadow-md shadow-cyan-500/25">
+            View Analytics
+          </button>
+        </div>
+      </div>
+
+      <!-- KEY METRICS CARDS -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div class="glass-card rounded-2xl p-5 border border-white/5 hover:border-cyan-500/30 transition group cursor-pointer" onclick="switchTab('analytics')">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-xs font-semibold text-gray-400 tracking-wider uppercase font-mono">Total Monthly MRR</span>
+            <div class="w-8 h-8 rounded-lg bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400 group-hover:scale-110 transition">
+              <i data-lucide="dollar-sign" class="w-4 h-4"></i>
+            </div>
+          </div>
+          <div class="flex items-baseline gap-2">
+            <span class="text-2xl font-bold text-white tracking-tight font-mono">$128,450</span>
+            <span class="text-xs font-semibold text-emerald-400 flex items-center font-mono">
+              <i data-lucide="trending-up" class="w-3 h-3 mr-0.5"></i> +24.8%
+            </span>
+          </div>
+          <p class="text-[11px] text-gray-500 mt-2 font-medium">Compared to $102,900 last month</p>
+        </div>
+
+        <div class="glass-card rounded-2xl p-5 border border-white/5 hover:border-violet-500/30 transition group cursor-pointer" onclick="switchTab('agents')">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-xs font-semibold text-gray-400 tracking-wider uppercase font-mono">Active Inferences</span>
+            <div class="w-8 h-8 rounded-lg bg-violet-500/10 border border-violet-500/20 flex items-center justify-center text-violet-400 group-hover:scale-110 transition">
+              <i data-lucide="activity" class="w-4 h-4"></i>
+            </div>
+          </div>
+          <div class="flex items-baseline gap-2">
+            <span class="text-2xl font-bold text-white tracking-tight font-mono">4.82M</span>
+            <span class="text-xs font-semibold text-emerald-400 flex items-center font-mono">
+              <i data-lucide="trending-up" class="w-3 h-3 mr-0.5"></i> +12.3%
+            </span>
+          </div>
+          <p class="text-[11px] text-gray-500 mt-2 font-medium">Average 820 requests / sec</p>
+        </div>
+
+        <div class="glass-card rounded-2xl p-5 border border-white/5 hover:border-blue-500/30 transition group cursor-pointer" onclick="switchTab('pipelines')">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-xs font-semibold text-gray-400 tracking-wider uppercase font-mono">Average Latency</span>
+            <div class="w-8 h-8 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 group-hover:scale-110 transition">
+              <i data-lucide="zap" class="w-4 h-4"></i>
+            </div>
+          </div>
+          <div class="flex items-baseline gap-2">
+            <span class="text-2xl font-bold text-white tracking-tight font-mono">14.2 ms</span>
+            <span class="text-xs font-semibold text-emerald-400 flex items-center font-mono">
+              <i data-lucide="arrow-down" class="w-3 h-3 mr-0.5"></i> -3.8ms
+            </span>
+          </div>
+          <p class="text-[11px] text-gray-500 mt-2 font-medium">Edge CDN optimized (99.9% p99)</p>
+        </div>
+
+        <div class="glass-card rounded-2xl p-5 border border-white/5 hover:border-emerald-500/30 transition group cursor-pointer" onclick="switchTab('pipelines')">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-xs font-semibold text-gray-400 tracking-wider uppercase font-mono">Model Accuracy</span>
+            <div class="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 group-hover:scale-110 transition">
+              <i data-lucide="check-circle-2" class="w-4 h-4"></i>
+            </div>
+          </div>
+          <div class="flex items-baseline gap-2">
+            <span class="text-2xl font-bold text-white tracking-tight font-mono">99.84%</span>
+            <span class="text-xs font-semibold text-cyan-400 flex items-center font-mono">Optimal</span>
+          </div>
+          <p class="text-[11px] text-gray-500 mt-2 font-medium">Continuous reinforcement feedback</p>
+        </div>
+      </div>
+
+      <!-- CHARTS SECTION -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="glass-card rounded-2xl p-6 lg:col-span-2 border border-white/5 space-y-4">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h2 class="text-base font-bold text-white tracking-tight">Traffic Throughput & API Compute</h2>
+              <p class="text-xs text-gray-400">Daily inference calls scaled across distributed clusters</p>
+            </div>
+            <div class="flex items-center gap-1.5 p-1 rounded-xl bg-white/[0.03] border border-white/10 text-xs font-medium">
+              <button onclick="updateChartData('7d')" class="px-3 py-1 rounded-lg bg-cyan-500/20 text-cyan-300 font-semibold transition">7 Days</button>
+              <button onclick="updateChartData('30d')" class="px-3 py-1 rounded-lg text-gray-400 hover:text-white transition">30 Days</button>
+              <button onclick="updateChartData('quarter')" class="px-3 py-1 rounded-lg text-gray-400 hover:text-white transition">Quarter</button>
+            </div>
+          </div>
+          <div class="h-72 w-full pt-4">
+            <canvas id="trafficChart"></canvas>
+          </div>
+        </div>
+
+        <div class="glass-card rounded-2xl p-6 border border-white/5 flex flex-col justify-between space-y-4">
+          <div>
+            <div class="flex items-center justify-between">
+              <h2 class="text-base font-bold text-white tracking-tight">Compute Allocation</h2>
+              <i data-lucide="pie-chart" class="w-4 h-4 text-gray-400"></i>
+            </div>
+            <p class="text-xs text-gray-400 mt-1">Resource consumption by model architecture</p>
+          </div>
+          <div class="h-52 flex items-center justify-center relative">
+            <canvas id="computeDonutChart"></canvas>
+            <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+              <span class="text-2xl font-bold font-mono text-white">100%</span>
+              <span class="text-[10px] text-gray-400 uppercase tracking-wider font-mono">Load Factor</span>
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-2 pt-2 border-t border-white/5 text-xs">
+            <div class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-cyan-400"></span><span class="text-gray-300">LLM Deep Reasoning (54%)</span></div>
+            <div class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-violet-500"></span><span class="text-gray-300">Vision Diffusion (26%)</span></div>
+            <div class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span><span class="text-gray-300">Embedding Vector (14%)</span></div>
+            <div class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span><span class="text-gray-300">Speech Audio (6%)</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ACTIVE DEPLOYMENTS TABLE -->
+      <div class="glass-card rounded-2xl border border-white/5 overflow-hidden">
+        <div class="p-6 border-b border-white/5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h2 class="text-base font-bold text-white tracking-tight">Active Production Deployments</h2>
+            <p class="text-xs text-gray-400">Live health and uptime monitoring for deployed customer endpoints</p>
+          </div>
+          <button onclick="switchTab('pipelines')" class="px-3.5 py-1.5 rounded-xl bg-white/[0.03] border border-white/10 hover:bg-white/[0.08] text-xs font-semibold text-gray-300 hover:text-white transition flex items-center gap-2">
+            <i data-lucide="layers" class="w-3.5 h-3.5"></i>
+            Manage All Deployments
+          </button>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm text-gray-400">
+            <thead class="text-[11px] uppercase tracking-wider text-gray-500 bg-white/[0.02] border-b border-white/5 font-mono">
+              <tr>
+                <th class="py-3 px-6">Deployment Service</th>
+                <th class="py-3 px-6">Region</th>
+                <th class="py-3 px-6">Requests (24h)</th>
+                <th class="py-3 px-6">Status</th>
+                <th class="py-3 px-6">Latency</th>
+                <th class="py-3 px-6 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-white/5">
+              <tr class="hover:bg-white/[0.02] transition">
+                <td class="py-4 px-6">
+                  <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-lg bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400 font-mono font-bold text-xs">AI</div>
+                    <div><div class="font-semibold text-white">nexus-gpt-reasoning-v3</div><div class="text-xs text-gray-500 font-mono">api.nexus.io/v1/reasoning</div></div>
+                  </div>
+                </td>
+                <td class="py-4 px-6 text-xs font-mono">us-east-1 (N. Virginia)</td>
+                <td class="py-4 px-6 font-mono text-white">1,842,910</td>
+                <td class="py-4 px-6">
+                  <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                    Operational
+                  </span>
+                </td>
+                <td class="py-4 px-6 text-xs font-mono text-emerald-400">11ms</td>
+                <td class="py-4 px-6 text-right">
+                  <button onclick="alert('Viewing endpoint: nexus-gpt-reasoning-v3')" class="p-1.5 rounded-lg hover:bg-white/10 text-gray-400 hover:text-white transition"><i data-lucide="external-link" class="w-4 h-4"></i></button>
+                </td>
+              </tr>
+              <tr class="hover:bg-white/[0.02] transition">
+                <td class="py-4 px-6">
+                  <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-lg bg-violet-500/10 border border-violet-500/20 flex items-center justify-center text-violet-400 font-mono font-bold text-xs">VF</div>
+                    <div><div class="font-semibold text-white">nexus-vision-fast-diffusion</div><div class="text-xs text-gray-500 font-mono">api.nexus.io/v1/vision</div></div>
+                  </div>
+                </td>
+                <td class="py-4 px-6 text-xs font-mono">eu-central-1 (Frankfurt)</td>
+                <td class="py-4 px-6 font-mono text-white">924,105</td>
+                <td class="py-4 px-6">
+                  <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                    Operational
+                  </span>
+                </td>
+                <td class="py-4 px-6 text-xs font-mono text-emerald-400">18ms</td>
+                <td class="py-4 px-6 text-right">
+                  <button onclick="alert('Viewing endpoint: nexus-vision-fast-diffusion')" class="p-1.5 rounded-lg hover:bg-white/10 text-gray-400 hover:text-white transition"><i data-lucide="external-link" class="w-4 h-4"></i></button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== 2. ANALYTICS TAB ==================== -->
+    <div id="tab-analytics" class="tab-content hidden p-8 space-y-8 max-w-7xl mx-auto w-full">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/5 pb-6">
+        <div>
+          <h1 class="text-2xl font-bold text-white tracking-tight flex items-center gap-3">
+            <i data-lucide="bar-chart-3" class="w-6 h-6 text-cyan-400"></i>
+            Deep Analytics & Performance Metrics
+          </h1>
+          <p class="text-sm text-gray-400 mt-1">Global traffic distribution, p99 latency spikes, and conversion breakdown.</p>
+        </div>
+        <div class="flex gap-2">
+          <button class="px-4 py-2 rounded-xl bg-white/[0.04] border border-white/10 hover:bg-white/[0.08] text-white text-xs font-semibold">Live Stream (1s)</button>
+        </div>
+      </div>
+
+      <!-- Analytics Metric Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+        <div class="glass-card rounded-2xl p-6 border border-white/5 space-y-2">
+          <div class="text-xs font-mono text-gray-400 uppercase">Avg Response Time (p95)</div>
+          <div class="text-3xl font-bold font-mono text-cyan-400">18.4ms</div>
+          <div class="text-xs text-emerald-400 flex items-center"><i data-lucide="check" class="w-3.5 h-3.5 mr-1"></i> 99.9% within SLA target</div>
+        </div>
+        <div class="glass-card rounded-2xl p-6 border border-white/5 space-y-2">
+          <div class="text-xs font-mono text-gray-400 uppercase">Total Tokens Processed</div>
+          <div class="text-3xl font-bold font-mono text-violet-400">2.41 Billion</div>
+          <div class="text-xs text-gray-400">+148M tokens today</div>
+        </div>
+        <div class="glass-card rounded-2xl p-6 border border-white/5 space-y-2">
+          <div class="text-xs font-mono text-gray-400 uppercase">Error Rate (5xx / 4xx)</div>
+          <div class="text-3xl font-bold font-mono text-emerald-400">0.0012%</div>
+          <div class="text-xs text-gray-400">Zero critical downtime</div>
+        </div>
+      </div>
+
+      <!-- Geographical Traffic -->
+      <div class="glass-card rounded-2xl p-6 border border-white/5 space-y-4">
+        <h2 class="text-base font-bold text-white">Global Traffic by Region</h2>
+        <div class="space-y-3 pt-2">
+          <div>
+            <div class="flex justify-between text-xs mb-1">
+              <span class="text-gray-300">North America (US East & West)</span>
+              <span class="font-mono text-cyan-400">48% (2.3M calls)</span>
+            </div>
+            <div class="h-2 rounded-full bg-white/5 overflow-hidden"><div class="h-full bg-cyan-400 w-[48%]"></div></div>
+          </div>
+          <div>
+            <div class="flex justify-between text-xs mb-1">
+              <span class="text-gray-300">Europe (Frankfurt & London)</span>
+              <span class="font-mono text-violet-400">32% (1.5M calls)</span>
+            </div>
+            <div class="h-2 rounded-full bg-white/5 overflow-hidden"><div class="h-full bg-violet-400 w-[32%]"></div></div>
+          </div>
+          <div>
+            <div class="flex justify-between text-xs mb-1">
+              <span class="text-gray-300">Asia-Pacific (Tokyo & Singapore)</span>
+              <span class="font-mono text-blue-400">15% (720K calls)</span>
+            </div>
+            <div class="h-2 rounded-full bg-white/5 overflow-hidden"><div class="h-full bg-blue-400 w-[15%]"></div></div>
+          </div>
+          <div>
+            <div class="flex justify-between text-xs mb-1">
+              <span class="text-gray-300">Latin America & Others</span>
+              <span class="font-mono text-emerald-400">5% (240K calls)</span>
+            </div>
+            <div class="h-2 rounded-full bg-white/5 overflow-hidden"><div class="h-full bg-emerald-400 w-[5%]"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== 3. AI AGENTS TAB ==================== -->
+    <div id="tab-agents" class="tab-content hidden p-8 space-y-8 max-w-7xl mx-auto w-full">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/5 pb-6">
+        <div>
+          <h1 class="text-2xl font-bold text-white tracking-tight flex items-center gap-3">
+            <i data-lucide="bot" class="w-6 h-6 text-violet-400"></i>
+            Autonomous AI Agents Pool (14 Active)
+          </h1>
+          <p class="text-sm text-gray-400 mt-1">Manage, monitor, and deploy task-specialized AI agent instances.</p>
+        </div>
+        <button onclick="alert('Creating new autonomous agent...')" class="flex items-center gap-2 px-4 py-2 rounded-xl bg-violet-600 hover:bg-violet-500 text-white font-medium text-xs shadow-md transition">
+          <i data-lucide="plus" class="w-4 h-4"></i> Create New Agent
+        </button>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <!-- Agent 1 -->
+        <div class="glass-card rounded-2xl p-6 border border-white/5 space-y-4 hover:border-violet-500/30 transition">
+          <div class="flex items-start justify-between">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400">
+                <i data-lucide="terminal" class="w-5 h-5"></i>
+              </div>
+              <div>
+                <h3 class="font-bold text-white">CodeSentinel Agent</h3>
+                <span class="text-xs text-gray-500 font-mono">v1.8 • TypeScript / Python</span>
+              </div>
+            </div>
+            <span class="px-2 py-0.5 rounded-full text-[10px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-mono">Active</span>
+          </div>
+          <p class="text-xs text-gray-400 leading-relaxed">
+            Performs autonomous security audits, pull request reviews, and bug auto-patching with 99.4% precision.
+          </p>
+          <div class="pt-2 border-t border-white/5 flex items-center justify-between text-xs">
+            <span class="text-gray-500 font-mono">8,420 tasks completed</span>
+            <button onclick="toggleAgentStatus(this)" class="px-3 py-1 rounded-lg bg-white/5 hover:bg-white/10 text-white text-xs font-semibold">Pause</button>
+          </div>
+        </div>
+
+        <!-- Agent 2 -->
+        <div class="glass-card rounded-2xl p-6 border border-white/5 space-y-4 hover:border-violet-500/30 transition">
+          <div class="flex items-start justify-between">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-violet-500/10 border border-violet-500/20 flex items-center justify-center text-violet-400">
+                <i data-lucide="brain" class="w-5 h-5"></i>
+              </div>
+              <div>
+                <h3 class="font-bold text-white">OmniSearch Researcher</h3>
+                <span class="text-xs text-gray-500 font-mono">v2.1 • Multi-modal RAG</span>
+              </div>
+            </div>
+            <span class="px-2 py-0.5 rounded-full text-[10px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-mono">Active</span>
+          </div>
+          <p class="text-xs text-gray-400 leading-relaxed">
+            Crawls knowledge bases, synthesizes research papers, and structures technical documentation.
+          </p>
+          <div class="pt-2 border-t border-white/5 flex items-center justify-between text-xs">
+            <span class="text-gray-500 font-mono">14,210 queries</span>
+            <button onclick="toggleAgentStatus(this)" class="px-3 py-1 rounded-lg bg-white/5 hover:bg-white/10 text-white text-xs font-semibold">Pause</button>
+          </div>
+        </div>
+
+        <!-- Agent 3 -->
+        <div class="glass-card rounded-2xl p-6 border border-white/5 space-y-4 hover:border-violet-500/30 transition">
+          <div class="flex items-start justify-between">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400">
+                <i data-lucide="sparkles" class="w-5 h-5"></i>
+              </div>
+              <div>
+                <h3 class="font-bold text-white">Growth & SEO Copywriter</h3>
+                <span class="text-xs text-gray-500 font-mono">v3.0 • Conversion Model</span>
+              </div>
+            </div>
+            <span class="px-2 py-0.5 rounded-full text-[10px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-mono">Active</span>
+          </div>
+          <p class="text-xs text-gray-400 leading-relaxed">
+            Generates high-converting landing page headlines, ads, and viral short scripts directly into CMS.
+          </p>
+          <div class="pt-2 border-t border-white/5 flex items-center justify-between text-xs">
+            <span class="text-gray-500 font-mono">6,180 campaigns</span>
+            <button onclick="toggleAgentStatus(this)" class="px-3 py-1 rounded-lg bg-white/5 hover:bg-white/10 text-white text-xs font-semibold">Pause</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Interactive Agent Prompt Tester -->
+      <div class="glass-card rounded-2xl p-6 border border-white/5 space-y-4">
+        <h3 class="text-base font-bold text-white flex items-center gap-2">
+          <i data-lucide="play" class="w-4 h-4 text-cyan-400"></i>
+          Test Agent Live Execution
+        </h3>
+        <div class="flex gap-3">
+          <input type="text" id="agent-test-input" placeholder="Type an instruction for the agent (e.g. 'Audit this endpoint for memory leaks')" class="flex-1 bg-white/[0.03] border border-white/10 rounded-xl px-4 py-2 text-sm text-gray-200 focus:outline-none focus:border-cyan-500/60">
+          <button onclick="runAgentTest()" class="px-5 py-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs tracking-wide transition shadow-md">
+            Execute Prompt
+          </button>
+        </div>
+        <div id="agent-test-output" class="hidden p-4 rounded-xl bg-black/40 border border-white/5 font-mono text-xs text-emerald-400 space-y-1">
+          <div>[Agent response in 12ms]: Task executed successfully with zero syntax violations. Telemetry logged.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== 4. PIPELINES & MODELS TAB ==================== -->
+    <div id="tab-pipelines" class="tab-content hidden p-8 space-y-8 max-w-7xl mx-auto w-full">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/5 pb-6">
+        <div>
+          <h1 class="text-2xl font-bold text-white tracking-tight flex items-center gap-3">
+            <i data-lucide="layers" class="w-6 h-6 text-blue-400"></i>
+            Model Pipelines & Orchestration
+          </h1>
+          <p class="text-sm text-gray-400 mt-1">Configure weights, inference engines, quantization (FP16/INT8), and fallback routes.</p>
+        </div>
+        <button onclick="openDeployModal()" class="flex items-center gap-2 px-4 py-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs shadow-md transition">
+          <i data-lucide="plus" class="w-4 h-4"></i> New Model Route
+        </button>
+      </div>
+
+      <div class="space-y-4">
+        <div class="glass-card rounded-2xl p-6 border border-white/5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+          <div class="space-y-1">
+            <div class="flex items-center gap-3">
+              <span class="text-lg font-bold text-white">nexus-reasoning-pro</span>
+              <span class="px-2 py-0.5 rounded bg-cyan-500/10 text-cyan-400 text-[11px] font-mono border border-cyan-500/20">70B Param • INT4 Quantized</span>
+            </div>
+            <p class="text-xs text-gray-400">Primary reasoning model for complex code analysis and data engineering.</p>
+          </div>
+          <div class="flex items-center gap-4">
+            <div class="text-right">
+              <div class="text-xs font-mono text-emerald-400 font-bold">12.4 ms / tok</div>
+              <div class="text-[10px] text-gray-500">p99 Latency</div>
+            </div>
+            <button onclick="alert('Configuring nexus-reasoning-pro weights...')" class="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-white text-xs font-semibold">Configure</button>
+          </div>
+        </div>
+
+        <div class="glass-card rounded-2xl p-6 border border-white/5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+          <div class="space-y-1">
+            <div class="flex items-center gap-3">
+              <span class="text-lg font-bold text-white">nexus-diffusion-ultra</span>
+              <span class="px-2 py-0.5 rounded bg-violet-500/10 text-violet-400 text-[11px] font-mono border border-violet-500/20">Generative Image Pipeline</span>
+            </div>
+            <p class="text-xs text-gray-400">High-speed 16:9 photorealistic visual generation engine with LoRA adapter support.</p>
+          </div>
+          <div class="flex items-center gap-4">
+            <div class="text-right">
+              <div class="text-xs font-mono text-emerald-400 font-bold">840 ms / img</div>
+              <div class="text-[10px] text-gray-500">Render Speed</div>
+            </div>
+            <button onclick="alert('Configuring diffusion pipeline...')" class="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-white text-xs font-semibold">Configure</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== 5. DATASTORES TAB ==================== -->
+    <div id="tab-datastores" class="tab-content hidden p-8 space-y-8 max-w-7xl mx-auto w-full">
+      <div class="border-b border-white/5 pb-6">
+        <h1 class="text-2xl font-bold text-white tracking-tight flex items-center gap-3">
+          <i data-lucide="database" class="w-6 h-6 text-emerald-400"></i>
+          Vector Datastores & Embeddings Memory
+        </h1>
+        <p class="text-sm text-gray-400 mt-1">Managed index namespaces, similarity search clusters, and cache invalidation.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div class="glass-card rounded-2xl p-6 border border-white/5 space-y-4">
+          <div class="flex items-center justify-between">
+            <h3 class="font-bold text-white text-base">Global Knowledge Vector Index</h3>
+            <span class="px-2.5 py-0.5 rounded-full text-xs bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-mono">Connected</span>
+          </div>
+          <div class="space-y-2">
+            <div class="flex justify-between text-xs font-mono text-gray-400">
+              <span>Indexed Vectors:</span>
+              <span class="text-white font-bold">14,842,100</span>
+            </div>
+            <div class="flex justify-between text-xs font-mono text-gray-400">
+              <span>Dimensions:</span>
+              <span class="text-white font-bold">1536 (Cosine Metric)</span>
+            </div>
+            <div class="flex justify-between text-xs font-mono text-gray-400">
+              <span>Average Query Speed:</span>
+              <span class="text-emerald-400 font-bold">4.2 ms</span>
+            </div>
+          </div>
+          <button onclick="alert('Syncing Vector Index...')" class="w-full py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-white font-semibold text-xs transition">
+            Sync Now
+          </button>
+        </div>
+
+        <div class="glass-card rounded-2xl p-6 border border-white/5 space-y-4">
+          <div class="flex items-center justify-between">
+            <h3 class="font-bold text-white text-base">Redis Edge Cache Tier</h3>
+            <span class="px-2.5 py-0.5 rounded-full text-xs bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 font-mono">98.4% Hit Rate</span>
+          </div>
+          <div class="space-y-2">
+            <div class="flex justify-between text-xs font-mono text-gray-400">
+              <span>Cached Keys:</span>
+              <span class="text-white font-bold">1,240,892</span>
+            </div>
+            <div class="flex justify-between text-xs font-mono text-gray-400">
+              <span>Memory Used:</span>
+              <span class="text-white font-bold">14.2 GB / 64 GB</span>
+            </div>
+            <div class="flex justify-between text-xs font-mono text-gray-400">
+              <span>Eviction Policy:</span>
+              <span class="text-cyan-400 font-bold">Volatile-LRU</span>
+            </div>
+          </div>
+          <button onclick="alert('Flushing cache tier...')" class="w-full py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-white font-semibold text-xs transition">
+            Purge Cache
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== 6. API KEYS TAB ==================== -->
+    <div id="tab-apikeys" class="tab-content hidden p-8 space-y-8 max-w-7xl mx-auto w-full">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/5 pb-6">
+        <div>
+          <h1 class="text-2xl font-bold text-white tracking-tight flex items-center gap-3">
+            <i data-lucide="shield-check" class="w-6 h-6 text-emerald-400"></i>
+            API Keys & Production Credentials
+          </h1>
+          <p class="text-sm text-gray-400 mt-1">Manage secret tokens to authenticate inference requests with granular permissions.</p>
+        </div>
+        <button onclick="generateApiKey()" class="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-violet-600 hover:from-cyan-400 hover:to-violet-500 text-white font-medium text-xs shadow-md transition">
+          <i data-lucide="key" class="w-4 h-4"></i> Generate New Key
+        </button>
+      </div>
+
+      <div class="glass-card rounded-2xl border border-white/5 overflow-hidden">
+        <table class="w-full text-left text-sm text-gray-400">
+          <thead class="text-[11px] uppercase tracking-wider text-gray-500 bg-white/[0.02] border-b border-white/5 font-mono">
+            <tr>
+              <th class="py-3 px-6">Key Name</th>
+              <th class="py-3 px-6">Secret Token</th>
+              <th class="py-3 px-6">Permissions</th>
+              <th class="py-3 px-6">Created</th>
+              <th class="py-3 px-6 text-right">Action</th>
+            </tr>
+          </thead>
+          <tbody id="api-keys-tbody" class="divide-y divide-white/5">
+            <tr class="hover:bg-white/[0.02] transition">
+              <td class="py-4 px-6 font-semibold text-white">Production Cluster Primary</td>
+              <td class="py-4 px-6 font-mono text-cyan-400 text-xs">nx_live_9a8f27*****************b4</td>
+              <td class="py-4 px-6"><span class="px-2 py-0.5 rounded bg-white/5 text-gray-300 text-xs font-mono">Full Access</span></td>
+              <td class="py-4 px-6 text-xs text-gray-500 font-mono">Oct 14, 2026</td>
+              <td class="py-4 px-6 text-right">
+                <button onclick="copyKey('nx_live_9a8f27e48b11c900e84b23b4')" class="px-3 py-1 rounded bg-white/5 hover:bg-white/10 text-white text-xs mr-2">Copy</button>
+                <button onclick="revokeKey(this)" class="px-3 py-1 rounded bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 text-xs">Revoke</button>
+              </td>
+            </tr>
+            <tr class="hover:bg-white/[0.02] transition">
+              <td class="py-4 px-6 font-semibold text-white">Staging CI/CD Webhook</td>
+              <td class="py-4 px-6 font-mono text-cyan-400 text-xs">nx_test_41c098*****************21</td>
+              <td class="py-4 px-6"><span class="px-2 py-0.5 rounded bg-white/5 text-gray-300 text-xs font-mono">Read Only</span></td>
+              <td class="py-4 px-6 text-xs text-gray-500 font-mono">Nov 01, 2026</td>
+              <td class="py-4 px-6 text-right">
+                <button onclick="copyKey('nx_test_41c098df2410a711ef091221')" class="px-3 py-1 rounded bg-white/5 hover:bg-white/10 text-white text-xs mr-2">Copy</button>
+                <button onclick="revokeKey(this)" class="px-3 py-1 rounded bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 text-xs">Revoke</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ==================== 7. SETTINGS TAB ==================== -->
+    <div id="tab-settings" class="tab-content hidden p-8 space-y-8 max-w-7xl mx-auto w-full">
+      <div class="border-b border-white/5 pb-6">
+        <h1 class="text-2xl font-bold text-white tracking-tight flex items-center gap-3">
+          <i data-lucide="settings" class="w-6 h-6 text-gray-400"></i>
+          Platform Configuration & Account Settings
+        </h1>
+        <p class="text-sm text-gray-400 mt-1">Manage team members, webhook endpoints, billing details, and workspace preferences.</p>
+      </div>
+
+      <div class="glass-card rounded-2xl p-6 border border-white/5 space-y-6">
+        <div class="space-y-4">
+          <h3 class="font-bold text-white text-base">Workspace Information</h3>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-mono text-gray-400 mb-1">Organization Name</label>
+              <input type="text" value="Nexus AI Global Ltd." class="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-2 text-sm text-white">
+            </div>
+            <div>
+              <label class="block text-xs font-mono text-gray-400 mb-1">Contact Email</label>
+              <input type="email" value="olivier@nexus.io" class="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-2 text-sm text-white">
+            </div>
+          </div>
+        </div>
+
+        <div class="pt-6 border-t border-white/5 space-y-4">
+          <h3 class="font-bold text-white text-base">Preferences</h3>
+          <div class="space-y-3">
+            <label class="flex items-center gap-3 cursor-pointer">
+              <input type="checkbox" checked class="w-4 h-4 rounded text-cyan-500 bg-white/5 border-white/20">
+              <span class="text-sm text-gray-300">Enable real-time telemetry streaming (WebSocket)</span>
+            </label>
+            <label class="flex items-center gap-3 cursor-pointer">
+              <input type="checkbox" checked class="w-4 h-4 rounded text-cyan-500 bg-white/5 border-white/20">
+              <span class="text-sm text-gray-300">Automatic fallback to secondary cluster if latency exceeds 50ms</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="pt-4 flex justify-end">
+          <button onclick="alert('Settings saved successfully!')" class="px-6 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs tracking-wide transition shadow-md">
+            Save Preferences
+          </button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- DEPLOY MODEL MODAL (INTERACTIVE) -->
+  <div id="deploy-modal" class="fixed inset-0 bg-black/70 backdrop-blur-md hidden items-center justify-center z-50 p-4">
+    <div class="glass-card gradient-border rounded-2xl max-w-lg w-full p-6 space-y-5 animate-in fade-in zoom-in duration-200">
+      <div class="flex items-center justify-between border-b border-white/5 pb-4">
+        <h3 class="text-lg font-bold text-white flex items-center gap-2">
+          <i data-lucide="cpu" class="w-5 h-5 text-cyan-400"></i>
+          Deploy New AI Endpoint
+        </h3>
+        <button onclick="closeDeployModal()" class="text-gray-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
+      </div>
+
+      <div class="space-y-4 text-sm">
+        <div>
+          <label class="block text-xs font-mono text-gray-400 mb-1">Endpoint Name</label>
+          <input type="text" id="deploy-name" placeholder="e.g. nexus-reasoning-v4-fast" class="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-2 text-white text-sm">
+        </div>
+        <div>
+          <label class="block text-xs font-mono text-gray-400 mb-1">Architecture Base</label>
+          <select class="w-full bg-[#111827] border border-white/10 rounded-xl px-4 py-2 text-white text-sm">
+            <option>Nexus Deep Reasoning 70B (FP16)</option>
+            <option>Vision Diffusion Fast v3</option>
+            <option>Vector Embedding ada-003</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-mono text-gray-400 mb-1">Deployment Region</label>
+          <select class="w-full bg-[#111827] border border-white/10 rounded-xl px-4 py-2 text-white text-sm">
+            <option>us-east-1 (N. Virginia, 11ms latency)</option>
+            <option>eu-central-1 (Frankfurt, 18ms latency)</option>
+            <option>ap-southeast-1 (Tokyo, 22ms latency)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="pt-4 border-t border-white/5 flex items-center justify-end gap-3">
+        <button onclick="closeDeployModal()" class="px-4 py-2 rounded-xl text-xs font-semibold text-gray-400 hover:text-white">Cancel</button>
+        <button onclick="confirmDeploy()" class="px-5 py-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs tracking-wide transition shadow-md shadow-cyan-500/25">
+          Deploy to Production
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Initialize Lucide Icons
+    lucide.createIcons();
+
+    // Tab Navigation Logic
+    function switchTab(tabId) {
+      // Hide all tabs
+      document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.classList.add('hidden');
+      });
+
+      // Remove active class from all buttons
+      document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+
+      // Show selected tab
+      const targetTab = document.getElementById('tab-' + tabId);
+      if (targetTab) {
+        targetTab.classList.remove('hidden');
+      }
+
+      // Mark button active
+      const targetBtn = document.getElementById('nav-' + tabId);
+      if (targetBtn) {
+        targetBtn.classList.add('active');
+      }
+
+      // Re-initialize icons for newly shown tab
+      lucide.createIcons();
+    }
+
+    // Modal controls
+    function openDeployModal() {
+      const modal = document.getElementById('deploy-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      lucide.createIcons();
+    }
+
+    function closeDeployModal() {
+      const modal = document.getElementById('deploy-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function confirmDeploy() {
+      const name = document.getElementById('deploy-name').value || 'new-ai-deployment';
+      alert('🚀 Successfully deployed "' + name + '" to production clusters!');
+      closeDeployModal();
+    }
+
+    function toggleNotification() {
+      alert('🔔 Notifications:\n• US-East Cluster load optimized.\n• 2 new AI agent instances deployed.\n• Monthly revenue milestone reached: $128,450.');
+    }
+
+    function toggleAgentStatus(btn) {
+      if (btn.innerText === 'Pause') {
+        btn.innerText = 'Resume';
+        btn.classList.add('text-amber-400');
+      } else {
+        btn.innerText = 'Pause';
+        btn.classList.remove('text-amber-400');
+      }
+    }
+
+    function runAgentTest() {
+      const input = document.getElementById('agent-test-input').value;
+      const output = document.getElementById('agent-test-output');
+      if (!input) {
+        alert('Please enter a test prompt first.');
+        return;
+      }
+      output.classList.remove('hidden');
+      output.innerHTML = `<span class="text-cyan-400 font-bold">[Executing]:</span> "${input}"<br><span class="text-emerald-400">[Completed in 14ms]:</span> Query parsed, zero anomalies detected. Telemetry updated.`;
+    }
+
+    function copyKey(key) {
+      navigator.clipboard.writeText(key).then(() => {
+        alert('Copied API key to clipboard: ' + key);
+      }).catch(() => {
+        alert('Key: ' + key);
+      });
+    }
+
+    function revokeKey(btn) {
+      if (confirm('Are you sure you want to revoke this secret API key?')) {
+        const row = btn.closest('tr');
+        row.style.opacity = '0.3';
+        btn.innerText = 'Revoked';
+        btn.disabled = true;
+      }
+    }
+
+    function generateApiKey() {
+      const tbody = document.getElementById('api-keys-tbody');
+      const randomKey = 'nx_live_' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+      const newRow = document.createElement('tr');
+      newRow.className = 'hover:bg-white/[0.02] transition animate-in fade-in duration-300';
+      newRow.innerHTML = `
+        <td class="py-4 px-6 font-semibold text-white">Custom API Token (Generated)</td>
+        <td class="py-4 px-6 font-mono text-cyan-400 text-xs">${randomKey.substring(0, 14)}*****************</td>
+        <td class="py-4 px-6"><span class="px-2 py-0.5 rounded bg-white/5 text-gray-300 text-xs font-mono">Full Access</span></td>
+        <td class="py-4 px-6 text-xs text-gray-500 font-mono">Just Now</td>
+        <td class="py-4 px-6 text-right">
+          <button onclick="copyKey('${randomKey}')" class="px-3 py-1 rounded bg-white/5 hover:bg-white/10 text-white text-xs mr-2">Copy</button>
+          <button onclick="revokeKey(this)" class="px-3 py-1 rounded bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 text-xs">Revoke</button>
+        </td>
+      `;
+      tbody.prepend(newRow);
+      alert('✨ New API Key Generated:\n' + randomKey + '\n\nMake sure to save it safely!');
+    }
+
+    // Chart.js - Traffic Chart
+    const ctxTraffic = document.getElementById('trafficChart').getContext('2d');
+    const gradientTraffic = ctxTraffic.createLinearGradient(0, 0, 0, 300);
+    gradientTraffic.addColorStop(0, 'rgba(6, 182, 212, 0.4)');
+    gradientTraffic.addColorStop(0.6, 'rgba(139, 92, 246, 0.15)');
+    gradientTraffic.addColorStop(1, 'rgba(15, 23, 42, 0)');
+
+    const trafficChart = new Chart(ctxTraffic, {
+      type: 'line',
+      data: {
+        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+        datasets: [{
+          label: 'Requests (Million)',
+          data: [2.8, 3.4, 3.1, 4.2, 4.0, 4.9, 5.4],
+          borderColor: '#06b6d4',
+          borderWidth: 3,
+          tension: 0.4,
+          fill: true,
+          backgroundColor: gradientTraffic,
+          pointBackgroundColor: '#06b6d4',
+          pointBorderColor: '#07090E',
+          pointBorderWidth: 2,
+          pointRadius: 4,
+          pointHoverRadius: 6,
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: '#111827',
+            titleColor: '#F3F4F6',
+            bodyColor: '#06B6D4',
+            borderColor: 'rgba(255,255,255,0.1)',
+            borderWidth: 1,
+            padding: 10,
+            displayColors: false,
+          }
+        },
+        scales: {
+          x: {
+            grid: { color: 'rgba(255,255,255,0.03)' },
+            ticks: { color: '#64748B', font: { family: 'Plus Jakarta Sans', size: 11 } }
+          },
+          y: {
+            grid: { color: 'rgba(255,255,255,0.03)' },
+            ticks: { color: '#64748B', font: { family: 'JetBrains Mono', size: 11 } }
+          }
+        }
+      }
+    });
+
+    function updateChartData(range) {
+      if (range === '7d') {
+        trafficChart.data.labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+        trafficChart.data.datasets[0].data = [2.8, 3.4, 3.1, 4.2, 4.0, 4.9, 5.4];
+      } else if (range === '30d') {
+        trafficChart.data.labels = ['Week 1', 'Week 2', 'Week 3', 'Week 4'];
+        trafficChart.data.datasets[0].data = [18.2, 22.4, 26.8, 31.5];
+      } else {
+        trafficChart.data.labels = ['Q1', 'Q2', 'Q3', 'Q4 (Est)'];
+        trafficChart.data.datasets[0].data = [65.4, 84.2, 108.9, 142.0];
+      }
+      trafficChart.update();
+    }
+
+    // Chart.js - Compute Allocation Donut Chart
+    const ctxDonut = document.getElementById('computeDonutChart').getContext('2d');
+    new Chart(ctxDonut, {
+      type: 'doughnut',
+      data: {
+        labels: ['LLM Reasoning', 'Vision Diffusion', 'Embedding Vector', 'Speech Audio'],
+        datasets: [{
+          data: [54, 26, 14, 6],
+          backgroundColor: ['#06b6d4', '#8b5cf6', '#3b82f6', '#10b981'],
+          borderColor: '#0B0F19',
+          borderWidth: 3,
+          hoverOffset: 6
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        cutout: '76%',
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: '#111827',
+            borderColor: 'rgba(255,255,255,0.1)',
+            borderWidth: 1,
+            padding: 10
+          }
+        }
+      }
+    });
+  </script>
+</body>
+</html>
